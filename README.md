@@ -9,6 +9,8 @@ order-flow app or research notebook.
 
 *Synthetic order book (`demo/synth.js`), full bucket resolution, gaps in the data fade back in.*
 
+**[Live demo](https://kessler833.github.io/open-dom-heatmap/demo/)** — runs in your browser, with sliders for every setting.
+
 > Not affiliated with Bookmap or ATAS. "Bookmap-style" describes the kind of picture (a liquidity / depth-of-market
 > heatmap with percentile cut-offs); the algorithm is an independent implementation. Data feeds are not included — you
 > bring the order book (any exchange, crypto or futures).
