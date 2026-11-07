@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>open-dom-heatmap demo</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #000; color: #ccc; font: 13px system-ui, sans-serif; display: flex; height: 100vh; }
+    #wrap { flex: 1; position: relative; min-width: 0; }
+    canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+    #panel { width: 270px; padding: 12px 14px; background: #0b0b0e; border-left: 1px solid #222; overflow-y: auto; }
+    h1 { font-size: 15px; margin: 0 0 4px; color: #fff; }
+    p.small { color: #888; margin: 0 0 12px; line-height: 1.4; }
+    label { display: block; margin: 10px 0 2px; }
+    label span { float: right; color: #fff; font-variant-numeric: tabular-nums; }
+    input[type=range], select { width: 100%; }
+    #stats { margin-top: 14px; padding-top: 10px; border-top: 1px solid #222; color: #9a9; white-space: pre-line; font: 12px ui-monospace, monospace; }
+    button { margin-top: 12px; width: 100%; padding: 6px; background: #1a1a22; color: #ddd; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="wrap"><canvas id="heat"></canvas></div>
+  <div id="panel">
+    <h1>open-dom-heatmap</h1>
+    <p class="small">Synthetic order book, coloured live. Wheel = zoom price, Shift + wheel = zoom time. All settings recolour the whole history (in parallel workers).</p>
+    <div id="controls"></div>
+    <button id="regen">New random history</button>
+    <div id="stats"></div>
+  </div>
+  <script type="module" src="demo.js"></script>
+</body>
+</html>

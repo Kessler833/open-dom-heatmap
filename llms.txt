@@ -1,0 +1,18 @@
+# open-dom-heatmap
+
+> Zero-dependency JavaScript library for colouring order-book (liquidity / market-depth) heatmaps: each price level is
+> compared with its local and wide background, stretched between recalibrated percentile cut-offs, smoothed and persisted
+> over time; bounded per-bucket memory allows exact parallel backfill in web workers; a renderer keeps high-volume levels
+> visible when zoomed out (volume dominance) and scrolls incrementally.
+
+## Docs
+
+- [README](README.md): features, quick start, input format, settings, benchmarks, how it works
+- [AGENTS.md](AGENTS.md): install and usage steps for coding agents
+
+## Source
+
+- [src/processor.js](src/processor.js): StableProcessor (process one column → Uint8Array 0…255 per bucket)
+- [src/backfill.js](src/backfill.js): processHistory (parallel chunks with warm-up), processSequential
+- [src/render.js](src/render.js): HeatRenderer (volume dominance, incremental scroll), buildPalette
+- [demo/synth.js](demo/synth.js): synthetic order-book history generator

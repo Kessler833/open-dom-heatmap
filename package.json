@@ -1,0 +1,18 @@
+{
+  "name": "open-dom-heatmap",
+  "version": "0.1.0",
+  "description": "Fast, stable colouring for order-book (liquidity) heatmaps: local background, percentile cut-offs, persistence, bounded memory for exact parallel backfill, volume-dominance rendering. Zero dependencies.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": { ".": "./src/index.js" },
+  "files": ["src"],
+  "scripts": {
+    "test": "node --test test/test.mjs",
+    "bench": "node bench/bench.mjs",
+    "demo": "python -m http.server 8765"
+  },
+  "keywords": ["orderbook", "heatmap", "liquidity", "order-flow", "trading", "visualization", "canvas", "bookmap", "dom", "market-depth"],
+  "license": "MIT",
+  "author": "Hannes Kapsch",
+  "engines": { "node": ">=18" }
+}
