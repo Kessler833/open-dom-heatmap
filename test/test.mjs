@@ -74,3 +74,26 @@ test('renderer: incremental scroll equals a full redraw', () => {
   r.render(b, view(101));                                         // full
   assert.deepEqual(a, b);
 });
+
+test('bookToColumn: bids round down, asks up, every book shape', async () => {
+  const { bookToColumn, bookToBuckets } = await import('../src/book.js');
+  const bids = [['99.9', '2'], ['95', '1']], asks = new Map([[100.1, 3], [104.9, 4]]);
+  const c = bookToColumn(bids, asks, { seq: 1, bucket: 5, rows: 2 });
+  assert.equal(c.mid, 100);
+  assert.equal(c.kb, 18);                                   // floor(100 / 5) − 2
+  assert.deepEqual([...c.v], [0, 3, 0, 7, 0]);              // bucket 19 = 95 … 100: bids 2 + 1; bucket 21: asks 3 + 4
+  const o = bookToBuckets({ 101: 1 }, {}, { bucket: 1, kLo: 100, kHi: 102 });
+  assert.deepEqual([...o.v], [0, 1, 0]);
+  assert.equal(bookToColumn([], [], { seq: 2, bucket: 5 }).v, null);   // empty book → gap column
+});
+
+test('Columnizer: increasing seq, spike filter keeps the smaller of two samples', async () => {
+  const { Columnizer } = await import('../src/book.js');
+  let book = { bids: [[99, 10]], asks: [[101, 1]] }; const out = [];
+  const cz = new Columnizer(() => book, { bucket: 1, rows: 3, colMs: 250 }, (c) => out.push(c));
+  cz.sample(1000); book = { bids: [[99, 50]], asks: [[101, 1]] }; cz.sample(1250); cz.sample(2000);
+  assert.deepEqual(out.map((c) => c.seq), [1, 2, 5]);       // the missed samples show up as a gap
+  const i = 99 - out[1].kb;
+  assert.equal(out[1].v[i], 10);                            // the jump to 50 must stand one interval first
+  assert.equal(out[2].v[i], 50);
+});

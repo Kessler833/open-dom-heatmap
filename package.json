@@ -1,18 +1,53 @@
 {
   "name": "open-dom-heatmap",
-  "version": "0.1.0",
-  "description": "Fast, stable colouring for order-book (liquidity) heatmaps: local background, percentile cut-offs, persistence, bounded memory for exact parallel backfill, volume-dominance rendering. Zero dependencies.",
+  "version": "0.2.0",
+  "description": "Open-source, Bookmap-style DOM / order-book liquidity heatmap engine for developers: stable colouring, exact parallel backfill, fast canvas chart, order-book helpers. Zero dependencies.",
   "type": "module",
   "main": "src/index.js",
-  "exports": { ".": "./src/index.js" },
-  "files": ["src"],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src"
+  ],
   "scripts": {
     "test": "node --test test/test.mjs",
     "bench": "node bench/bench.mjs",
-    "demo": "python -m http.server 8765"
+    "demo": "python -m http.server 8765",
+    "llms": "node tools/build-llms.mjs"
   },
-  "keywords": ["orderbook", "heatmap", "liquidity", "order-flow", "trading", "visualization", "canvas", "bookmap", "dom", "market-depth"],
+  "keywords": [
+    "binance",
+    "bookmap",
+    "canvas",
+    "depth-of-market",
+    "dom",
+    "heatmap",
+    "liquidity",
+    "liquidity-heatmap",
+    "market-depth",
+    "order-flow",
+    "orderbook",
+    "trading",
+    "typescript",
+    "visualization"
+  ],
   "license": "MIT",
   "author": "Hannes Kapsch",
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  },
+  "types": "src/index.d.ts",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kessler833/open-dom-heatmap.git"
+  },
+  "homepage": "https://kessler833.github.io/open-dom-heatmap/demo/",
+  "bugs": {
+    "url": "https://github.com/Kessler833/open-dom-heatmap/issues"
+  }
 }

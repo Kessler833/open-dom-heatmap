@@ -7,11 +7,16 @@
 
 ## Docs
 
-- [README](README.md): features, quick start, input format, settings, benchmarks, how it works
+- [llms-full.txt](llms-full.txt): README, agent instructions and the full typed API in one file
+- [README](README.md): features, quick start, API, input format, settings, benchmarks, how it works
 - [AGENTS.md](AGENTS.md): install and usage steps for coding agents
+- [src/index.d.ts](src/index.d.ts): TypeScript declarations of every export
 
 ## Source
 
+- [src/chart.js](src/chart.js): DomHeatmap — ready-made canvas chart (zoom, pan, follow, incremental scroll)
+- [src/book.js](src/book.js): bookToColumn, Columnizer — from an order book to heatmap columns
+- [demo/live.js](demo/live.js): complete live example with the Binance depth stream
 - [src/processor.js](src/processor.js): StableProcessor (process one column → Uint8Array 0…255 per bucket)
 - [src/backfill.js](src/backfill.js): processHistory (parallel chunks with warm-up), processSequential
 - [src/render.js](src/render.js): HeatRenderer (volume dominance, incremental scroll), buildPalette

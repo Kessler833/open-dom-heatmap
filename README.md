@@ -1,15 +1,22 @@
 # open-dom-heatmap
 
+[![test](https://github.com/Kessler833/open-dom-heatmap/actions/workflows/test.yml/badge.svg)](https://github.com/Kessler833/open-dom-heatmap/actions/workflows/test.yml) ![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen) ![license MIT](https://img.shields.io/badge/license-MIT-blue) ![TypeScript types](https://img.shields.io/badge/types-included-blue)
+
 **An open-source, Bookmap-style DOM heatmap engine for developers.** It turns order-book depth (resting size per price
 level over time) into a clean, stable liquidity heatmap — the colouring algorithm, a parallel history backfill and a fast
-canvas renderer, in plain JavaScript with zero dependencies. Drop it into your own trading tool, crypto dashboard,
-order-flow app or research notebook.
+canvas renderer, a ready-made chart component and order-book helpers, in plain JavaScript with zero dependencies (TypeScript
+types included). Drop it into your own trading tool, crypto dashboard, order-flow app or research notebook.
 
 ![DOM heatmap rendered with open-dom-heatmap: walls as bright lines, thick liquidity around the price](docs/hero.png)
 
 *Synthetic order book (`demo/synth.js`), full bucket resolution, gaps in the data fade back in.*
 
-**[Live demo](https://kessler833.github.io/open-dom-heatmap/demo/)** — runs in your browser, with sliders for every setting.
+**Live demos** (run in your browser): [synthetic book with sliders for every setting](https://kessler833.github.io/open-dom-heatmap/demo/) ·
+[live Binance BTC / ETH / SOL order book](https://kessler833.github.io/open-dom-heatmap/demo/live.html)
+
+![Live Binance BTC/USDT order book, ten minutes, rendered with open-dom-heatmap](docs/live-btc.png)
+
+*Real data: ten minutes of the Binance BTC/USDT spot book (`demo/live-snapshot.mjs`), $5 buckets, white = mid price.*
 
 > Not affiliated with Bookmap or ATAS. "Bookmap-style" describes the kind of picture (a liquidity / depth-of-market
 > heatmap with percentile cut-offs); the algorithm is an independent implementation. Data feeds are not included — you
@@ -46,7 +53,10 @@ that are recalibrated over time, and keeps the picture calm — so you see the s
 ![Price zoomed out about 8 times: walls stay visible](docs/zoomed-out.png)
 
 - **Incremental scroll**: a new column shifts the image and draws only the live edge (under 1 ms at 1440 × 800).
-- **Zero dependencies**, ES modules, browser (canvas, workers) and Node.
+- **Ready-made chart** (`DomHeatmap`): zoom, pan, follow the live edge, HiDPI, mid-price line, custom overlays.
+- **Order-book helpers** (`bookToColumn`, `Columnizer`): from any book shape (Map, `[price, size]` pairs as exchanges send
+  them, or an object) to heatmap columns, sampled on a fixed interval with an optional spike filter.
+- **Zero dependencies**, ES modules, browser (canvas, workers) and Node; TypeScript declarations included.
 
 ## Quick start
 
@@ -57,14 +67,34 @@ npm test
 npm run demo
 ```
 
-Then open `http://localhost:8765/demo/` — a live demo with sliders for every setting (it needs a local web server because
-it uses module workers).
+Then open `http://localhost:8765/demo/` (synthetic data) or `http://localhost:8765/demo/live.html` (live Binance book).
+A local web server is needed because the demos use module workers.
+
+### From a live order book to a heatmap in a few lines
+
+```html
+<canvas id="heat" style="width: 100%; height: 600px"></canvas>
+<script type="module">
+  import { DomHeatmap, Columnizer } from './src/index.js';
+
+  // your order book, kept up to date by your exchange connection: Map price → size (or [price, size] pairs)
+  const book = { bids: new Map(), asks: new Map() };
+
+  const chart = new DomHeatmap(document.getElementById('heat'), { bucket: 5, colMs: 250 });
+  // every 250 ms: ±200 buckets around the mid price → one column → coloured and drawn
+  new Columnizer(() => book, { bucket: 5, rows: 200, colMs: 250 }, (col) => chart.push(col)).start();
+</script>
+```
+
+`demo/live.js` is a complete example with the Binance depth stream (snapshot + diff updates + resync), ~70 lines.
+
+### Lower level: processor and renderer
 
 ```js
-import { StableProcessor, processHistory, HeatRenderer } from './src/index.js';
+import { StableProcessor, processHistory, HeatRenderer, bookToColumn } from './src/index.js';
 
 // one column = summed resting size per price bucket (bids + asks); v[0] is bucket kb, i.e. price kb × bucket
-const column = { seq: 1, kb: 15000, v: new Float32Array([/* sizes */]) };
+const column = bookToColumn(bids, asks, { seq: 1, bucket: 5, rows: 200 });   // or build { seq, kb, v } yourself
 
 // live: one processor per heatmap source, one call per new column (e.g. every 250 ms)
 const proc = new StableProcessor({ lowCut: 35, highCut: 99 }, { bucket: 5, colMs: 250 });
@@ -81,6 +111,23 @@ new HeatRenderer().render(buf, {
 });
 ctx.putImageData(img, 0, 0);
 ```
+
+## API
+
+| Export | What it does |
+| --- | --- |
+| `DomHeatmap(canvas, opt)` | Ready-made chart. `setHistory(cols)`, `push(col)`, `setSettings(s)`, `setPalette(lut)`, `destroy()`; geometry `yOfPrice`, `priceOfY`, `xOfIndex`, `indexOfX`; options `bucket`, `colMs`, `settings`, `ppp`, `colW`, `rightPad`, `maxColumns`, `midLine`, `onDraw`. |
+| `Columnizer(getBook, opt, onColumn)` | Samples a live book every `colMs` into columns (`start()`, `stop()`, `sample()`), spike filter on by default. |
+| `bookToColumn(bids, asks, opt)` | One column (`±rows` buckets around the mid, or `kLo` / `kHi`, optional `far`). |
+| `bookToBuckets(bids, asks, opt)` / `bestPrices(bids, asks)` | Size per bucket in a range / best bid and ask. |
+| `StableProcessor(settings, opt)` | The colouring: `process(col)` → `{ kb, h, far }`, `reset()`, `noFadeIn()`. |
+| `processHistory(cols, settings, opt, par)` | Colours a history in parallel workers → `{ results, processor }`. |
+| `processSequential`, `processChunk`, `planChunks` | Single-chain and chunk building blocks (tests, custom pools). |
+| `HeatRenderer({ palette })` | `render(buf, view, { shift })` into a `Uint32Array` (ImageData). |
+| `buildPalette(stops, gamma)`, `CLASSIC` | 256-entry colour table from palette stops. |
+| `DEFAULTS`, `STALE`, `WARM`, `PAR_MIN`, `XCAP` | Default settings and tuning constants. |
+
+Full signatures: [`src/index.d.ts`](src/index.d.ts). Everything in one file for AI agents: [`llms-full.txt`](llms-full.txt).
 
 ## Input format
 
@@ -153,7 +200,10 @@ src/processor.js   StableProcessor — the colouring
 src/backfill.js    processHistory (parallel), processSequential, chunk planning
 src/worker.js      module worker for processHistory
 src/render.js      HeatRenderer, buildPalette
-demo/              browser demo, synthetic order-book generator, PNG snapshots for this README
+src/book.js        bookToColumn, bookToBuckets, bestPrices, Columnizer
+src/chart.js       DomHeatmap — ready-made canvas chart
+src/index.d.ts     TypeScript declarations
+demo/              synthetic and live (Binance) demos, synthetic data generator, PNG snapshots for this README
 test/test.mjs      node --test
 bench/bench.mjs    benchmark
 ```

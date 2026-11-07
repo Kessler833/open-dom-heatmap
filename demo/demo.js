@@ -1,15 +1,15 @@
-// Demo: a synthetic order-book history coloured with open-dom-heatmap, then "live" columns streaming in at 4 per second
-// (incremental scroll), with sliders for every setting (each change recolours the whole history in parallel workers).
+// Demo: a synthetic order-book history in a DomHeatmap, then "live" columns streaming in at 4 per second, with sliders for
+// every setting (each change recolours the whole history in parallel workers).
 
-import { processHistory, HeatRenderer, DEFAULTS } from '../src/index.js';
+import { DomHeatmap, DEFAULTS } from '../src/index.js';
 import { synthHistory } from './synth.js';
 
-const HIST = 6000, LIVE = 2400, COL_MS = 250;
-const canvas = document.getElementById('heat'), ctx = canvas.getContext('2d', { alpha: false });
+const HIST = 6000, LIVE = 2400, COL_MS = 250, BUCKET = 5;
 const stats = document.getElementById('stats');
-const renderer = new HeatRenderer();
 const cfg = { ...DEFAULTS };
-let data, shown, results, proc, img, buf, ppp = 0.25, colW = 0.5, center = NaN, seed = 7, busy = false, lastRender = 0, backfillMs = 0, shAcc = 0;
+let data, shown = 0, seed = 7, backfillMs = 0;
+
+const chart = new DomHeatmap(document.getElementById('heat'), { bucket: BUCKET, colMs: COL_MS, colW: 0.5, ppp: 0.25, settings: cfg });
 
 // ---------- settings panel ----------
 const SLIDERS = [
@@ -18,6 +18,9 @@ const SLIDERS = [
   ['contrast', 'Contrast (gamma)', 0.3, 3, 0.05], ['edge', 'Far blend: range', 0.05, 1, 0.05], ['edgeStr', 'Far blend: strength', 0, 1, 0.05],
 ];
 const box = document.getElementById('controls');
+let pend = 0;
+/** Recolours after a setting changed (debounced while a slider moves). */
+const recolour = () => { clearTimeout(pend); pend = setTimeout(async () => { const t = performance.now(); await chart.setSettings(cfg); backfillMs = performance.now() - t; }, 120); };
 for (const [k, label, min, max, step] of SLIDERS) {
   const l = document.createElement('label'); l.innerHTML = `${label} <span>${cfg[k]}</span>`;
   const r = Object.assign(document.createElement('input'), { type: 'range', min, max, step, value: cfg[k] });
@@ -32,57 +35,16 @@ for (const [k, label, min, max, step] of SLIDERS) {
 }
 document.getElementById('regen').onclick = () => { seed++; start(); };
 
-// ---------- data + colouring ----------
-/** Recolours everything shown so far (debounced while a slider moves). */
-let pend = 0;
-function recolour() { clearTimeout(pend); pend = setTimeout(async () => { await backfill(); draw(true); }, 120); }
-
-async function backfill() {
-  busy = true;
-  const t0 = performance.now();
-  const r = await processHistory(data.cols.slice(0, shown), cfg, { bucket: data.bucket, colMs: COL_MS });
-  backfillMs = performance.now() - t0; results = r.results; proc = r.processor; busy = false;
-}
-
+// ---------- data ----------
 async function start() {
-  data = synthHistory({ n: HIST + LIVE, seed, bucket: 5, rows: 1200 });   // full bucket resolution over ±6000 $
-  shown = HIST; center = NaN;
-  await backfill(); draw(true);
+  data = synthHistory({ n: HIST + LIVE, seed, bucket: BUCKET, rows: 1200 });   // full bucket resolution over ±6000 $
+  shown = HIST;
+  const t = performance.now(); await chart.setHistory(data.cols.slice(0, HIST)); backfillMs = performance.now() - t;
 }
-
-// live: one new column every 250 ms, coloured by the continuing processor, drawn incrementally
+// live: one new column every 250 ms
+setInterval(() => { if (data && shown < data.cols.length) chart.push(data.cols[shown++]); }, COL_MS);
 setInterval(() => {
-  if (!data || busy || shown >= data.cols.length) return;
-  const col = data.cols[shown++]; results.push(proc.process(col));
-  shAcc += colW; const s = Math.floor(shAcc); shAcc -= s;   // whole pixels to scroll; the remainder is carried
-  draw(false, s);
-}, COL_MS);
-
-// ---------- drawing ----------
-function draw(full, shiftCols = 0) {
-  const w = canvas.clientWidth, h = canvas.clientHeight; if (!(w > 0 && h > 0) || !results) return;
-  if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; full = true; }
-  if (!img || img.width !== w || img.height !== h) { img = new ImageData(w, h); buf = new Uint32Array(img.data.buffer); full = true; }
-  const last = data.cols[shown - 1], mid = (last.kb + (last.v.length >> 1) + 0.5) * data.bucket;
-  if (!(center > 0)) center = mid;
-  const dc = mid - center;
-  if (Math.abs(dc) * ppp > h * 0.3) { center += dc - Math.sign(dc) * h * 0.3 / ppp; full = true; }   // follow price (recentre in steps)
-  const view = { width: w, height: h, cols: data.cols, res: results, endIndex: shown - 1, xEnd: w - 40, colW,
-    priceTop: center + h / 2 / ppp, priceBottom: center - h / 2 / ppp, bucket: data.bucket };
-  const t0 = performance.now();
-  if (full) shAcc = 0;
-  renderer.render(buf, view, full ? {} : { shift: shiftCols });
-  ctx.putImageData(img, 0, 0);
-  lastRender = performance.now() - t0;
-  stats.textContent = `history: ${HIST} columns + ${shown - HIST} live\nbackfill: ${backfillMs.toFixed(0)} ms (parallel workers)\n` +
-    `last draw: ${lastRender.toFixed(1)} ms (${full ? 'full' : 'incremental'})\nzoom: ${ppp.toFixed(3)} px/$, ${colW.toFixed(2)} px/column`;
-}
-
-canvas.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  const f = e.deltaY < 0 ? 1.15 : 1 / 1.15;
-  if (e.shiftKey) colW = Math.max(0.02, Math.min(12, colW * f)); else ppp = Math.max(0.005, Math.min(20, ppp * f));
-  draw(true);
-}, { passive: false });
-addEventListener('resize', () => draw(true));
+  stats.textContent = `history: ${HIST} columns + ${Math.max(0, shown - HIST)} live\nbackfill: ${backfillMs.toFixed(0)} ms (parallel workers)\n` +
+    `zoom: ${chart.ppp.toFixed(3)} px/$, ${chart.colW.toFixed(2)} px/column\n${chart.follow ? 'following live' : 'paused — double-click to follow'}`;
+}, 500);
 start();

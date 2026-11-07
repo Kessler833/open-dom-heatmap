@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>open-dom-heatmap — live Binance order book</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #000; color: #ccc; font: 13px system-ui, sans-serif; height: 100vh; display: flex; flex-direction: column; }
+    header { display: flex; gap: 14px; align-items: center; padding: 8px 12px; background: #0b0b0e; border-bottom: 1px solid #222; flex-wrap: wrap; }
+    header b { color: #fff; }
+    #status { color: #9a9; font: 12px ui-monospace, monospace; }
+    select { background: #111; color: #ddd; border: 1px solid #333; }
+    a { color: #8af; }
+    canvas { flex: 1; width: 100%; min-height: 0; display: block; }
+  </style>
+</head>
+<body>
+  <header>
+    <b>open-dom-heatmap</b>
+    <span>Live <select id="sym"></select> order book from Binance (public data, no key) · wheel / Shift + wheel = zoom, drag = pan, double-click = follow</span>
+    <span id="status">connecting…</span>
+    <a href="index.html">synthetic demo</a>
+  </header>
+  <canvas id="heat"></canvas>
+  <script type="module" src="live.js"></script>
+</body>
+</html>

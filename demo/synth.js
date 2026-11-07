@@ -42,7 +42,7 @@ export function synthHistory(o = {}) {
       v[i] = (2 + 30 * Math.exp(-d / 40)) * facOf(kb + i) * Math.exp(gauss() * 0.15);   // thick near the touch, persistent per price
     }
     for (const w of walls) { const i = w.k - kb; if (i >= 0 && i < len) v[i] += w.q; }
-    const col = { seq, kb, v };
+    const col = { seq, kb, v, mid: (kMid + 0.5) * bucket };   // mid = the price (for a mid line)
     if (withFar) {   // whole book on a ~20 bp grid from 0.5 × to 1.5 × price
       const base = Math.floor(price * 0.5 / g), m = Math.floor(price / g) + 1, fv = new Float32Array(m);
       for (let j = 0; j < m; j++) { const p = (base + j) * g, d = Math.abs(p - price) / price; fv[j] = d < 1e-3 ? 0 : 400 * Math.exp(-d * 30) * ffacOf(base + j) * Math.exp(gauss() * 0.1); }
