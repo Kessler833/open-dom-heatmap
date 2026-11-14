@@ -18,7 +18,7 @@ Full API with types: `src/index.d.ts`. Everything in one file: `llms-full.txt`.
 No npm release yet. Clone or vendor the `src/` folder:
 
 ```bash
-git clone https://github.com/Kessler833/open-dom-heatmap.git
+git clone https://github.com/HannesKapsch/open-dom-heatmap.git
 ```
 
 Import from `src/index.js` (ES modules; Node ≥ 18 or any modern browser). Serve `src/worker.js` next to `src/backfill.js`

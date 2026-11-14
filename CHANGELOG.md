@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (2026-11-14)
+
+- Moved to the new GitHub account name HannesKapsch: install commands, links and the live demo URL now point to github.com/HannesKapsch. Old Kessler833 links redirect for now. No code changes.
+
 ## 0.2.0
 
 - `DomHeatmap`: ready-made canvas chart — zoom (wheel / Shift + wheel), pan (drag), follow the live edge (double-click),

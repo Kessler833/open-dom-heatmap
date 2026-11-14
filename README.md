@@ -1,6 +1,6 @@
 # open-dom-heatmap
 
-[![test](https://github.com/Kessler833/open-dom-heatmap/actions/workflows/test.yml/badge.svg)](https://github.com/Kessler833/open-dom-heatmap/actions/workflows/test.yml) ![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen) ![license MIT](https://img.shields.io/badge/license-MIT-blue) ![TypeScript types](https://img.shields.io/badge/types-included-blue)
+[![test](https://github.com/HannesKapsch/open-dom-heatmap/actions/workflows/test.yml/badge.svg)](https://github.com/HannesKapsch/open-dom-heatmap/actions/workflows/test.yml) ![zero dependencies](https://img.shields.io/badge/dependencies-0-brightgreen) ![license MIT](https://img.shields.io/badge/license-MIT-blue) ![TypeScript types](https://img.shields.io/badge/types-included-blue)
 
 **An open-source, Bookmap-style DOM heatmap engine for developers.** It turns order-book depth (resting size per price
 level over time) into a clean, stable liquidity heatmap — the colouring algorithm, a parallel history backfill and a fast
@@ -11,8 +11,8 @@ types included). Drop it into your own trading tool, crypto dashboard, order-flo
 
 *Synthetic order book (`demo/synth.js`), full bucket resolution, gaps in the data fade back in.*
 
-**Live demos** (run in your browser): [synthetic book with sliders for every setting](https://kessler833.github.io/open-dom-heatmap/demo/) ·
-[live Binance BTC / ETH / SOL order book](https://kessler833.github.io/open-dom-heatmap/demo/live.html)
+**Live demos** (run in your browser): [synthetic book with sliders for every setting](https://hanneskapsch.github.io/open-dom-heatmap/demo/) ·
+[live Binance BTC / ETH / SOL order book](https://hanneskapsch.github.io/open-dom-heatmap/demo/live.html)
 
 ![Live Binance BTC/USDT order book, ten minutes, rendered with open-dom-heatmap](docs/live-btc.png)
 
@@ -61,7 +61,7 @@ that are recalibrated over time, and keeps the picture calm — so you see the s
 ## Quick start
 
 ```bash
-git clone https://github.com/Kessler833/open-dom-heatmap.git
+git clone https://github.com/HannesKapsch/open-dom-heatmap.git
 cd open-dom-heatmap
 npm test
 npm run demo
