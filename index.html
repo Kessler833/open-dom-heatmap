@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>open-dom-heatmap: Open-Source Bookmap-Style Order Book Heatmap (JavaScript)</title>
+<meta name="description" content="open-dom-heatmap turns order-book depth into a clean, stable liquidity heatmap: percentile colouring, exact parallel backfill in web workers, a fast canvas renderer and a ready-made chart. Zero-dependency JavaScript with TypeScript types. Live Binance demo.">
+<meta name="keywords" content="order book heatmap, Bookmap alternative, DOM heatmap, liquidity heatmap JavaScript, depth of market chart, order flow, market microstructure, crypto order book visualization, Binance order book heatmap, canvas heatmap">
+<meta name="author" content="Hannes Kapsch">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://kessler833.github.io/open-dom-heatmap/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="open-dom-heatmap: Open-Source Bookmap-Style Order Book Heatmap (JavaScript)">
+<meta property="og:description" content="open-dom-heatmap turns order-book depth into a clean, stable liquidity heatmap: percentile colouring, exact parallel backfill in web workers, a fast canvas renderer and a ready-made chart. Zero-dependency JavaScript with TypeScript types. Live Binance demo.">
+<meta property="og:url" content="https://kessler833.github.io/open-dom-heatmap/">
+<meta property="og:image" content="https://kessler833.github.io/open-dom-heatmap/docs/hero.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="open-dom-heatmap: Open-Source Bookmap-Style Order Book Heatmap (JavaScript)">
+<meta name="twitter:description" content="open-dom-heatmap turns order-book depth into a clean, stable liquidity heatmap: percentile colouring, exact parallel backfill in web workers, a fast canvas renderer and a ready-made chart. Zero-dependency JavaScript with TypeScript types. Live Binance demo.">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "open-dom-heatmap", "description": "open-dom-heatmap turns order-book depth into a clean, stable liquidity heatmap: percentile colouring, exact parallel backfill in web workers, a fast canvas renderer and a ready-made chart. Zero-dependency JavaScript with TypeScript types. Live Binance demo.", "url": "https://kessler833.github.io/open-dom-heatmap/", "applicationCategory": "DeveloperApplication", "operatingSystem": "Browser, Node.js", "programmingLanguage": "JavaScript", "license": "https://opensource.org/licenses/MIT", "codeRepository": "https://github.com/Kessler833/open-dom-heatmap", "downloadUrl": "https://github.com/Kessler833/open-dom-heatmap", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "author": {"@type": "Person", "name": "Hannes Kapsch", "url": "https://github.com/Kessler833", "sameAs": ["https://github.com/Kessler833"]}, "keywords": "order book heatmap, Bookmap alternative, DOM heatmap, liquidity heatmap JavaScript, depth of market chart, order flow, market microstructure, crypto order book visualization, Binance order book heatmap, canvas heatmap", "image": "https://kessler833.github.io/open-dom-heatmap/docs/hero.png"}</script>
+<style>
+:root{--bg:#fbfaf7;--fg:#1d1d1b;--mut:#5d5c57;--card:#fff;--line:#e4e1d8;--acc:#b8501f;--code:#f1efe8}
+@media (prefers-color-scheme:dark){:root{--bg:#161614;--fg:#ecebe6;--mut:#a3a19a;--card:#1f1f1c;--line:#34332e;--acc:#e8865a;--code:#262622}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.w{max-width:880px;margin:0 auto;padding:0 16px}
+header{padding:56px 0 24px}h1{font-size:clamp(1.8rem,4.5vw,2.6rem);line-height:1.15;margin:0 0 12px;letter-spacing:-.01em}
+.tag{font-size:1.15rem;color:var(--mut);margin:0 0 24px;max-width:46em}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-block;padding:10px 18px;border-radius:8px;border:1px solid var(--line);color:var(--fg);text-decoration:none;font-weight:600;background:var(--card)}
+.btn.p{background:var(--acc);border-color:var(--acc);color:#fff}
+.hero{margin:32px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:block}.hero img{display:block;width:100%;height:auto}
+h2{font-size:1.35rem;margin:44px 0 14px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.f{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px}.f h3{margin:0 0 6px;font-size:1rem}.f p{margin:0;color:var(--mut);font-size:.95rem}
+pre{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto;font:14px/1.5 ui-monospace,Consolas,monospace}
+.note{color:var(--mut);font-size:.9rem}
+ul.o{padding-left:1.2em}ul.o li{margin:4px 0}a{color:var(--acc)}
+footer{border-top:1px solid var(--line);margin-top:56px;padding:24px 0 40px;color:var(--mut);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="w">
+<header>
+<h1>open-dom-heatmap: Open-Source Bookmap-Style Order Book Heatmap (JavaScript)</h1>
+<p class="tag">An open-source, Bookmap-style DOM / liquidity heatmap engine for developers. Zero-dependency JavaScript.</p>
+<div class="btns"><a class="btn p" href="https://github.com/Kessler833/open-dom-heatmap">View on GitHub</a><a class="btn" href="demo/">Live demo: synthetic book</a><a class="btn" href="demo/live.html">Live demo: Binance BTC / ETH / SOL</a><a class="btn" href="https://github.com/Kessler833/open-dom-heatmap#readme">Documentation</a></div>
+</header>
+<main>
+<a class="hero" href="https://github.com/Kessler833/open-dom-heatmap"><img src="docs/hero.png" alt="DOM heatmap rendered with open-dom-heatmap: walls as bright lines" loading="eager"></a>
+<p>open-dom-heatmap turns order-book depth into a clean, stable liquidity heatmap: percentile colouring, exact parallel backfill in web workers, a fast canvas renderer and a ready-made chart. Zero-dependency JavaScript with TypeScript types. Live Binance demo.</p>
+<h2>Features</h2>
+<div class="g"><div class="f"><h3>Stable colouring</h3><p>Size relative to a local and wide background with percentile cut-offs, so one huge order never rescales the whole picture.</p></div><div class="f"><h3>Exact parallel backfill</h3><p>Long histories split across web workers reproduce the sequential result exactly.</p></div><div class="f"><h3>Fast canvas renderer</h3><p>Volume-dominance downsampling keeps walls visible when zoomed out; a new column draws in under 1 ms.</p></div><div class="f"><h3>Ready-made chart</h3><p>DomHeatmap with zoom, pan, live-edge follow, HiDPI, mid-price line and overlays.</p></div><div class="f"><h3>Order-book helpers</h3><p>From Map, [price, size] pairs or objects to heatmap columns, with an optional spike filter.</p></div><div class="f"><h3>Zero dependencies</h3><p>ES modules for browser and Node, TypeScript declarations included.</p></div></div>
+<h2>Install</h2>
+<pre><code>git clone https://github.com/Kessler833/open-dom-heatmap.git
+cd open-dom-heatmap
+npm test
+npm run demo</code></pre>
+<p>Full instructions, requirements and troubleshooting are in the <a href="https://github.com/Kessler833/open-dom-heatmap#readme">README on GitHub</a>.</p>
+<p class="note">Not affiliated with Bookmap or ATAS. “Bookmap-style” describes the kind of picture.</p>
+<h2>More open-source projects by Hannes Kapsch</h2>
+<ul class="o"><li><a href="https://kessler833.github.io/Ornith-1.5-35B-A3B-for-GTX1070-Inference-Engine/">Ornith GTX 1070 Inference Engine</a>: A 35B-parameter mixture-of-experts model on a single 8 GB GTX 1070, at about 25–30 tokens per second.</li><li><a href="https://kessler833.github.io/claude-hotswitch/">Hotswitch</a>: Switch the Claude Desktop app between several Claude accounts with one click. No signing in again, no 2FA every time.</li><li><a href="https://kessler833.github.io/claude-critter/">Claude Critter</a>: A tiny desktop pet that lives in the Claude desktop app, reacts to everything Claude does and never costs a token.</li><li><a href="https://kessler833.github.io/tools-plus-plus/">tools++</a>: An MCP server with 55 small tools so Claude stops guessing: exact math, dates and holidays, CSV, SQLite, PDF, archives, ports, ffmpeg.</li></ul>
+</main>
+<footer>Open source under the <a href="https://github.com/Kessler833/open-dom-heatmap/blob/main/LICENSE">MIT license</a> &copy; Hannes Kapsch &middot; <a href="https://github.com/Kessler833">github.com/Kessler833</a></footer>
+</div>
+</body>
+</html>
